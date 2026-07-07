@@ -89,6 +89,18 @@ Every push to your connected branch triggers a new Render build automatically (a
 
 Because the URL never changes, you only need to enter it once — future updates just require re-fetching from Acode.
 
+### In-app update notifications
+
+The plugin checks `https://antigravity-code.onrender.com/version.json` (built into `build/` alongside `dist.zip`) on every startup and shows an "Update Available" notification if the hosted version is newer than the installed one, plus a **Check for Updates** / **Release Notes** section in Settings → About. Acode has no documented API for a plugin to reinstall itself, so **Update Now** opens the zip download and then tells the user to finish via Acode's own plugin manager (Remote reinstall or Local pick) — it can't silently replace itself in place.
+
+**Every release, bump the version in three places** so the update check and the notification text stay accurate:
+
+1. `package.json` → `"version"` (this is what gets baked into the running plugin via webpack's `DefinePlugin`, i.e. what users are considered to "have").
+2. `plugin.json` → `"version"` (what Acode's plugin manager itself tracks).
+3. `version.json` → `"version"` + `"changelog"` (what the update checker fetches to decide if a newer release exists, and what's shown in Release Notes).
+
+If these drift out of sync, the update check will compare against the wrong "installed" baseline.
+
 ## 6. Notes and caveats
 
 - **Free tier spin-down**: Render's free Static Site tier does not spin down like free Web Services do (static sites are just CDN-served files), so the URL stays responsive without a "cold start" delay.

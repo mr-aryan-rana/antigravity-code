@@ -32,3 +32,13 @@ export function clearCache(): void {
     if (k !== CONFIG_KEY) storageBackend.remove(k);
   }
 }
+
+const DISMISSED_UPDATE_KEY = "dismissed-update-version";
+
+export function getDismissedUpdateVersion(): string | null {
+  return storageBackend.get(DISMISSED_UPDATE_KEY);
+}
+
+export function setDismissedUpdateVersion(version: string): void {
+  storageBackend.set(DISMISSED_UPDATE_KEY, version);
+}

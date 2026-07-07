@@ -1,7 +1,10 @@
-import { el } from "../../utils/dom";
+import { el, clear } from "../../utils/dom";
 import { PROVIDER_DEFINITIONS, getProviderDefinition } from "../../providers/registry";
-import { getConfig, updateConfig, resetConfig, clearCache } from "../../storage/configStore";
+import { getConfig, updateConfig, resetConfig, clearCache, setDismissedUpdateVersion } from "../../storage/configStore";
 import { WcPage } from "../../types/acode";
+import { INSTALLED_VERSION } from "../../version";
+import { checkForUpdate, UpdateCheckResult } from "../../services/updateChecker";
+import { createUpdateBanner } from "../components/updateBanner";
 
 export function openSettingsPage(baseUrl: string): WcPage {
   const pageFactory = acode.require("page");
@@ -82,6 +85,63 @@ export function openSettingsPage(baseUrl: string): WcPage {
     (apiKeyInput as HTMLInputElement).value = "";
   });
 
+  const updateSlot = el("div", {});
+  let lastCheckResult: UpdateCheckResult | null = null;
+
+  function renderUpdateSlot() {
+    clear(updateSlot);
+    if (!lastCheckResult || !lastCheckResult.hasUpdate) return;
+    updateSlot.append(
+      createUpdateBanner(lastCheckResult, {
+        onUpdateNow: () => {
+          if (!lastCheckResult) return;
+          window.open(lastCheckResult.downloadUrl, "_blank");
+          acode.alert?.(
+            "Finish the update",
+            "The download has started in your browser. Acode plugins can't reinstall themselves automatically: " +
+              "once it's downloaded, go to Settings → Plugins → Antigravity Code, and reinstall using the same " +
+              "Remote URL (or pick the downloaded dist.zip via Local install) to complete the update.",
+          );
+        },
+        onLater: () => {
+          if (lastCheckResult) setDismissedUpdateVersion(lastCheckResult.remoteVersion);
+          renderUpdateSlot();
+        },
+      }),
+    );
+  }
+
+  const checkUpdatesBtn = el("button", { className: "ag-ghost" }, ["Check for Updates"]);
+  checkUpdatesBtn.addEventListener("click", async () => {
+    checkUpdatesBtn.textContent = "Checking...";
+    lastCheckResult = await checkForUpdate();
+    checkUpdatesBtn.textContent = "Check for Updates";
+    if (!lastCheckResult) {
+      acode.pushNotification?.("Antigravity Code", "Could not reach the update server. Try again later.");
+      return;
+    }
+    if (!lastCheckResult.hasUpdate) {
+      acode.pushNotification?.("Antigravity Code", `You're on the latest version (v${INSTALLED_VERSION}).`);
+    }
+    renderUpdateSlot();
+  });
+
+  const releaseNotesBtn = el("button", { className: "ag-ghost" }, ["Release Notes"]);
+  releaseNotesBtn.addEventListener("click", async () => {
+    const result = lastCheckResult ?? (await checkForUpdate());
+    acode.alert?.(
+      `Release Notes${result ? ` — v${result.remoteVersion}` : ""}`,
+      result?.changelog || "No release notes available right now.",
+    );
+  });
+
+  const aboutSection = el("div", { className: "ag-wizard-card ag-glass" }, [
+    el("div", { className: "ag-approval-title" }, ["Antigravity Code"]),
+    el("div", { className: "ag-checkbox-row" }, [`Version: ${INSTALLED_VERSION}`]),
+    el("div", { className: "ag-wizard-actions" }, [checkUpdatesBtn, releaseNotesBtn]),
+    updateSlot,
+  ]);
+
   const body = el("div", { className: "antigravity ag-wizard" }, [
     el("div", { className: "ag-wizard-card ag-glass" }, [
       field("Provider", providerSelect),
@@ -97,6 +157,7 @@ export function openSettingsPage(baseUrl: string): WcPage {
       checkboxRow(autoSaveCheckbox, "Auto Save"),
       el("div", { className: "ag-wizard-actions" }, [saveBtn, clearCacheBtn, resetBtn]),
     ]),
+    aboutSection,
   ]);
 
   page.appendBody(

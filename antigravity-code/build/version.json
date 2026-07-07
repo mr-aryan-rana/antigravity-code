@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "download": "https://antigravity-code.onrender.com/dist.zip",
+  "changelog": "Initial release: setup wizard, streaming chat, NVIDIA NIM / OpenAI-compatible / Anthropic / Gemini providers, agent tool system with approval, diff preview, conversation management, quick-action commands."
+}

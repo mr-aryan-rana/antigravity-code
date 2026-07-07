@@ -1,6 +1,8 @@
 const path = require("path");
+const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ZipWebpackPlugin = require("zip-webpack-plugin");
+const { version } = require("./package.json");
 
 module.exports = (env, argv) => {
   const isProd = argv.mode === "production";
@@ -27,6 +29,9 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      new webpack.DefinePlugin({
+        __ANTIGRAVITY_VERSION__: JSON.stringify(version),
+      }),
       new CopyWebpackPlugin({
         patterns: [
           { from: "media", to: "media" },
@@ -34,6 +39,7 @@ module.exports = (env, argv) => {
           { from: "readme.md", to: "../readme.md" },
           { from: "changelogs.md", to: "../changelogs.md" },
           { from: "icon.png", to: "../icon.png" },
+          { from: "version.json", to: "../version.json" },
         ],
       }),
       new ZipWebpackPlugin({

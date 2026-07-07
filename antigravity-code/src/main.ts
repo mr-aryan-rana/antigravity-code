@@ -1,8 +1,9 @@
-import { getConfig } from "./storage/configStore";
+import { getConfig, getDismissedUpdateVersion } from "./storage/configStore";
 import { openSetupWizard } from "./ui/views/SetupWizardPage";
 import { openChatPage } from "./ui/views/ChatPage";
 import { openSettingsPage } from "./ui/views/SettingsPage";
 import { registerCommands, unregisterCommands } from "./commands/quickActionCommands";
+import { checkForUpdate } from "./services/updateChecker";
 
 const PLUGIN_ID = "com.antigravity.code";
 /**
@@ -99,6 +100,17 @@ acode.setPluginInit(PLUGIN_ID, (baseUrl: string) => {
     }
 
     console.log(`${LOG_PREFIX} Done.`);
+
+    // Non-blocking: never delays plugin init, never throws (checkForUpdate swallows its own errors).
+    checkForUpdate().then((result) => {
+      if (!result || !result.hasUpdate) return;
+      if (getDismissedUpdateVersion() === result.remoteVersion) return;
+      acode.pushNotification?.(
+        "Antigravity Code",
+        `🚀 v${result.remoteVersion} is available (you have v${result.installedVersion}). Open Settings to update.`,
+        { onClick: openSettings },
+      );
+    });
   } catch (err) {
     console.error(`${LOG_PREFIX} Initialization failed:`, err);
     acode.alert?.("Antigravity Code — Plugin Error", String(err instanceof Error ? err.message : err));
