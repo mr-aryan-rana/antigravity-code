@@ -1,0 +1,27 @@
+{
+  "id": "com.antigravity.code",
+  "name": "Antigravity Code",
+  "main": "dist/main.js",
+  "version": "0.1.0",
+  "readme": "readme.md",
+  "icon": "icon.png",
+  "changelogs": "changelogs.md",
+  "minVersionCode": 292,
+  "price": 0,
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "assistant",
+    "chat",
+    "agent",
+    "copilot",
+    "nvidia",
+    "openai",
+    "anthropic",
+    "gemini"
+  ],
+  "author": {
+    "name": "Antigravity Code",
+    "email": "skumartandon39@gmail.com"
+  }
+}

@@ -1,0 +1,82 @@
+.ag-wizard {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ag-wizard-hero {
+  text-align: center;
+  padding: 28px 16px;
+  margin-bottom: 4px;
+}
+
+.ag-wizard-hero h1 {
+  font-size: 22px;
+  margin: 0 0 6px;
+  background: linear-gradient(135deg, #fff, #b9aeff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ag-wizard-hero p {
+  margin: 0;
+  color: var(--ag-text-dim);
+  font-size: 14px;
+}
+
+.ag-wizard-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ag-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ag-field label {
+  font-size: 13px;
+  color: var(--ag-text-dim);
+  font-weight: 500;
+}
+
+.ag-key-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ag-key-row input {
+  flex: 1;
+}
+
+.ag-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ag-text-dim);
+}
+
+.ag-checkbox-row input {
+  width: auto;
+  min-height: auto;
+}
+
+.ag-wizard-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ag-wizard-actions button {
+  flex: 1;
+  min-width: 100px;
+}
