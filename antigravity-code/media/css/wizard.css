@@ -1,30 +1,21 @@
-.ag-wizard {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 24px 20px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
 .ag-wizard-hero {
   text-align: center;
-  padding: 32px 16px 24px;
-  margin-bottom: 4px;
+  padding: var(--ag-space-6) var(--ag-space-4) var(--ag-space-4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: var(--ag-space-3);
 }
 
 .ag-wizard-hero .ag-logo-mark {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
 }
 
 .ag-wizard-hero h1 {
-  font-size: 23px;
-  margin: 0 0 6px;
+  font-size: clamp(19px, 5.5vw, 23px);
+  margin: 0;
+  line-height: 1.25;
   background: linear-gradient(135deg, #fff, #b9aeff);
   -webkit-background-clip: text;
   background-clip: text;
@@ -40,10 +31,10 @@
 
 .ag-wizard-card {
   position: relative;
-  padding: 18px;
+  padding: var(--ag-space-5);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--ag-space-4);
   overflow: hidden;
 }
 
@@ -61,45 +52,71 @@
 .ag-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--ag-space-2);
 }
 
 .ag-field label {
   font-size: 13px;
   color: var(--ag-text-dim);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.1px;
 }
 
 .ag-key-row {
   display: flex;
-  gap: 8px;
+  gap: var(--ag-space-2);
+  align-items: stretch;
 }
 
 .ag-key-row input {
   flex: 1;
+  min-width: 0;
+}
+
+.ag-key-row button {
+  flex-shrink: 0;
+  width: var(--ag-touch);
+  min-height: var(--ag-touch);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ag-checkbox-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--ag-space-2);
   font-size: 13px;
   color: var(--ag-text-dim);
 }
 
-.ag-checkbox-row input {
-  width: auto;
-  min-height: auto;
-}
-
 .ag-wizard-actions {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
   flex-wrap: wrap;
+  gap: var(--ag-space-2);
 }
 
 .ag-wizard-actions button {
-  flex: 1;
-  min-width: 100px;
+  flex: 1 1 auto;
+  min-width: 90px;
+  min-height: var(--ag-touch);
+  white-space: nowrap;
+}
+
+/* Continue is the primary CTA and should read as such: full-width, on its own row. */
+.ag-wizard-actions button.ag-primary {
+  flex-basis: 100%;
+  order: -1;
+}
+
+@media (max-width: 380px) {
+  .ag-wizard-actions {
+    flex-direction: column;
+  }
+
+  .ag-wizard-actions button {
+    flex-basis: auto;
+    width: 100%;
+  }
 }

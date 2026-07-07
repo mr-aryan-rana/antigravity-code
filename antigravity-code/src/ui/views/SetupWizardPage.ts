@@ -3,6 +3,7 @@ import { PROVIDER_DEFINITIONS, getProviderDefinition } from "../../providers/reg
 import { updateConfig, getConfig } from "../../storage/configStore";
 import { WcPage } from "../../types/acode";
 import { createLogoMark } from "../components/logo";
+import { createEyeToggleButton } from "../components/eyeToggleButton";
 
 export interface SetupWizardCallbacks {
   onDone(): void;
@@ -21,19 +22,19 @@ export function openSetupWizard(baseUrl: string, callbacks: SetupWizardCallbacks
   );
   providerSelect.value = config.provider;
 
-  const modelInput = el("input", { type: "text", placeholder: getProviderDefinition(config.provider).exampleModel, value: config.model });
+  const modelInput = el("input", {
+    type: "text",
+    placeholder: getProviderDefinition(config.provider).exampleModel,
+    value: config.model,
+  });
 
   const endpointInput = el("input", { type: "text", value: config.endpoint });
 
-  const apiKeyInput = el("input", { type: "password", placeholder: "API Key", value: config.apiKey });
-  const toggleKeyBtn = el("button", { className: "ag-ghost" }, ["Show"]);
-  toggleKeyBtn.addEventListener("click", () => {
-    const showing = apiKeyInput.getAttribute("type") === "text";
-    apiKeyInput.setAttribute("type", showing ? "password" : "text");
-    toggleKeyBtn.textContent = showing ? "Show" : "Hide";
-  });
+  // Placeholder shows an example key format rather than repeating the field's own "API Key" label above it.
+  const apiKeyInput = el("input", { type: "password", placeholder: "sk-...", value: config.apiKey });
+  const toggleKeyBtn = createEyeToggleButton(apiKeyInput);
 
-  const rememberCheckbox = el("input", { type: "checkbox" }) as HTMLInputElement;
+  const rememberCheckbox = el("input", { type: "checkbox", id: "ag-remember-key" }) as HTMLInputElement;
   rememberCheckbox.checked = config.rememberApiKey;
 
   function syncEndpointForProvider() {
@@ -77,24 +78,32 @@ export function openSetupWizard(baseUrl: string, callbacks: SetupWizardCallbacks
     window.open("https://github.com/", "_blank");
   });
 
-  const wizard = el("div", { className: "antigravity ag-wizard" }, [
+  const field = (labelText: string, input: HTMLElement, required = false) =>
+    el("div", { className: "ag-field" }, [
+      el("label", { className: required ? "ag-required" : undefined }, [labelText]),
+      input,
+    ]);
+
+  const modalCard = el("div", { className: "ag-modal-card" }, [
     el("div", { className: "ag-wizard-hero" }, [
-      createLogoMark(64),
+      createLogoMark(56),
       el("h1", {}, ["Welcome to Antigravity Code"]),
       el("p", {}, ["Let's connect your AI model."]),
     ]),
     el("div", { className: "ag-wizard-card ag-glass" }, [
-      el("div", { className: "ag-field" }, [el("label", {}, ["Provider"]), providerSelect]),
-      el("div", { className: "ag-field" }, [el("label", {}, ["Model Name"]), modelInput]),
-      el("div", { className: "ag-field" }, [el("label", {}, ["Endpoint"]), endpointInput]),
-      el("div", { className: "ag-field" }, [
-        el("label", {}, ["API Key"]),
-        el("div", { className: "ag-key-row" }, [apiKeyInput, toggleKeyBtn]),
+      field("Provider", providerSelect, true),
+      field("Model Name", modelInput, true),
+      field("Endpoint", endpointInput),
+      field("API Key", el("div", { className: "ag-key-row" }, [apiKeyInput, toggleKeyBtn])),
+      el("div", { className: "ag-checkbox-row" }, [
+        el("span", { className: "ag-checkbox-hit" }, [rememberCheckbox]),
+        el("label", { for: "ag-remember-key" }, ["Remember API Key Securely"]),
       ]),
-      el("div", { className: "ag-checkbox-row" }, [rememberCheckbox, "Remember API Key Securely"]),
       el("div", { className: "ag-wizard-actions" }, [continueBtn, skipBtn, learnMoreBtn]),
     ]),
   ]);
+
+  const wizard = el("div", { className: "antigravity ag-modal-overlay" }, [modalCard]);
 
   const link = el("link", { rel: "stylesheet", href: `${baseUrl}media/css/theme.css` });
   const link2 = el("link", { rel: "stylesheet", href: `${baseUrl}media/css/wizard.css` });

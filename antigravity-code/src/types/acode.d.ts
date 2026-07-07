@@ -94,7 +94,7 @@ export interface EditorManagerGlobal {
  * `document.body` can end up invisible behind Acode's own full-screen shell).
  * `.get('main' | 'header' | 'sidebar' | ...)` returns the named region.
  */
-export interface AppShellGlobal {
+export interface AppShellGlobal extends HTMLElement {
   get(region: string): HTMLElement | undefined;
 }
 

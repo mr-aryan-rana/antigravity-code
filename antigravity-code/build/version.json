@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "download": "https://antigravity-code.onrender.com/dist.zip",
-  "changelog": "Fixed a bug where the plugin had no visible way to open it after install: the sidebar icon used an invalid icon class (rendered blank), pages/floating button were mounted to document.body instead of Acode's actual app root, and command registration only tried a module that isn't always present. Added a guaranteed floating launch button, a real Material Icons sidebar icon, mounting via Acode's app shell root, and command registration via Ace's editor command manager as well as the commands module. Also added a new logo/icon and general UI polish."
+  "changelog": "Fixed the setup wizard/settings 'popup' rendering as a small transparent overlay bleeding through the editor instead of a proper full-screen modal: it now renders as an opaque, centered, internally-scrollable card (~94vw on small screens) above a dimmed/blurred backdrop, at a guaranteed top z-index. Fixed a duplicate 'API Key' label, replaced the Show/Hide text button with a properly-sized eye-icon toggle, fixed checkbox alignment and touch-target size, made the Continue/Save button a full-width primary action with Skip/secondary actions below, added responsive stacking on narrow screens, and preloaded all stylesheets at plugin init to avoid an unstyled flash on first open."
 }

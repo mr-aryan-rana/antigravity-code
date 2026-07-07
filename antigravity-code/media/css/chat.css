@@ -1,7 +1,14 @@
-.ag-chat {
+.antigravity.ag-chat {
+  /* Same guarantee as .ag-modal-overlay: full viewport, opaque, always on top —
+     regardless of what height/stacking context the surrounding page/app shell provides. */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  z-index: 2147483000;
+  background: var(--ag-bg);
 }
 
 .ag-chat-topbar {

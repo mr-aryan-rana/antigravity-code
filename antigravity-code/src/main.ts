@@ -57,22 +57,32 @@ function mountPage(page: unknown): void {
   }
 }
 
-/** Injects the shared theme stylesheet into <head> once, so it applies globally — including to UI mounted outside any page's own DOM subtree. */
-function ensureGlobalStylesheet(baseUrl: string): void {
-  const existing = document.head.querySelector(`link[data-antigravity-theme]`);
-  if (existing) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = `${baseUrl}media/css/theme.css`;
-  link.setAttribute("data-antigravity-theme", "1");
-  document.head.append(link);
+/**
+ * Preloads every stylesheet the plugin uses into <head> once, at init time —
+ * before any page/button is ever shown. Previously each page injected its own
+ * <link> tags at open-time, which raced against first paint (styles arriving
+ * a beat after content), so the very first open of the wizard would flash
+ * unstyled/transparent before CSS applied. Loading everything up front at
+ * init means by the time a user can tap anything, the CSS is already there.
+ */
+function ensureGlobalStylesheets(baseUrl: string): void {
+  const sheets = ["media/css/theme.css", "media/css/wizard.css", "media/css/chat.css"];
+  for (const sheet of sheets) {
+    const marker = `data-antigravity-sheet="${sheet}"`;
+    if (document.head.querySelector(`link[${marker}]`)) continue;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${baseUrl}${sheet}`;
+    link.setAttribute("data-antigravity-sheet", sheet);
+    document.head.append(link);
+  }
 }
 
 acode.setPluginInit(PLUGIN_ID, (baseUrl: string) => {
   try {
     console.log(`${LOG_PREFIX} Initializing...`);
     const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
-    ensureGlobalStylesheet(normalizedBaseUrl);
+    ensureGlobalStylesheets(normalizedBaseUrl);
 
     function openChat() {
       const page = openChatPage(normalizedBaseUrl, openSettings);

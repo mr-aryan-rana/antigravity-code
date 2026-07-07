@@ -5,6 +5,7 @@ import { WcPage } from "../../types/acode";
 import { INSTALLED_VERSION } from "../../version";
 import { checkForUpdate, UpdateCheckResult } from "../../services/updateChecker";
 import { createUpdateBanner } from "../components/updateBanner";
+import { createEyeToggleButton } from "../components/eyeToggleButton";
 
 export function openSettingsPage(baseUrl: string): WcPage {
   const pageFactory = acode.require("page");
@@ -23,6 +24,7 @@ export function openSettingsPage(baseUrl: string): WcPage {
   const modelInput = el("input", { type: "text", value: config.model });
   const endpointInput = el("input", { type: "text", value: config.endpoint });
   const apiKeyInput = el("input", { type: "password", value: config.apiKey });
+  const apiKeyToggleBtn = createEyeToggleButton(apiKeyInput);
 
   providerSelect.addEventListener("change", () => {
     const def = getProviderDefinition(providerSelect.value);
@@ -42,18 +44,21 @@ export function openSettingsPage(baseUrl: string): WcPage {
   const maxTokensInput = el("input", { type: "number", value: String(config.maxTokens) });
   maxTokensInput.setAttribute("min", "1");
 
-  const systemPromptInput = el("textarea", { rows: "4" }, [config.systemPrompt]) as HTMLTextAreaElement;
+  const systemPromptInput = el("textarea", { rows: "4" }) as HTMLTextAreaElement;
   systemPromptInput.value = config.systemPrompt;
 
-  const streamingCheckbox = el("input", { type: "checkbox" }) as HTMLInputElement;
+  const streamingCheckbox = el("input", { type: "checkbox", id: "ag-streaming" }) as HTMLInputElement;
   streamingCheckbox.checked = config.streaming;
-  const agentModeCheckbox = el("input", { type: "checkbox" }) as HTMLInputElement;
+  const agentModeCheckbox = el("input", { type: "checkbox", id: "ag-agent-mode" }) as HTMLInputElement;
   agentModeCheckbox.checked = config.agentMode;
-  const autoSaveCheckbox = el("input", { type: "checkbox" }) as HTMLInputElement;
+  const autoSaveCheckbox = el("input", { type: "checkbox", id: "ag-auto-save" }) as HTMLInputElement;
   autoSaveCheckbox.checked = config.autoSave;
 
-  const checkboxRow = (checkbox: HTMLElement, labelText: string) =>
-    el("div", { className: "ag-checkbox-row" }, [checkbox, labelText]);
+  const checkboxRow = (checkbox: HTMLInputElement, labelText: string) =>
+    el("div", { className: "ag-checkbox-row" }, [
+      el("span", { className: "ag-checkbox-hit" }, [checkbox]),
+      el("label", { for: checkbox.id }, [labelText]),
+    ]);
 
   const saveBtn = el("button", { className: "ag-primary" }, ["Save"]);
   saveBtn.addEventListener("click", () => {
@@ -142,12 +147,12 @@ export function openSettingsPage(baseUrl: string): WcPage {
     updateSlot,
   ]);
 
-  const body = el("div", { className: "antigravity ag-wizard" }, [
+  const modalCard = el("div", { className: "ag-modal-card" }, [
     el("div", { className: "ag-wizard-card ag-glass" }, [
       field("Provider", providerSelect),
       field("Model", modelInput),
       field("Endpoint", endpointInput),
-      field("API Key", apiKeyInput),
+      field("API Key", el("div", { className: "ag-key-row" }, [apiKeyInput, apiKeyToggleBtn])),
       field("Temperature", temperatureInput),
       field("Top P", topPInput),
       field("Max Tokens", maxTokensInput),
@@ -159,6 +164,8 @@ export function openSettingsPage(baseUrl: string): WcPage {
     ]),
     aboutSection,
   ]);
+
+  const body = el("div", { className: "antigravity ag-modal-overlay" }, [modalCard]);
 
   page.appendBody(
     el("link", { rel: "stylesheet", href: `${baseUrl}media/css/theme.css` }),
