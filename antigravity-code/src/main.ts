@@ -4,6 +4,7 @@ import { openChatPage } from "./ui/views/ChatPage";
 import { openSettingsPage } from "./ui/views/SettingsPage";
 import { registerCommands, unregisterCommands } from "./commands/quickActionCommands";
 import { checkForUpdate } from "./services/updateChecker";
+import { createFloatingButton } from "./ui/components/floatingButton";
 
 const PLUGIN_ID = "com.antigravity.code";
 /**
@@ -30,19 +31,48 @@ function pushAction(id: string, action: () => void): void {
   }
 }
 
+/**
+ * Finds the actual visible mount point for plugin UI. `window.app` is an
+ * undocumented but real global exposed by Acode's own app shell (confirmed
+ * via the AcodeX terminal plugin's source, which mounts into `app.get("main")`
+ * rather than `document.body`) — appending straight to `document.body` can
+ * render behind/outside Acode's full-screen app root and never be seen.
+ */
+function getMountRoot(): HTMLElement {
+  try {
+    const main = window.app?.get("main");
+    if (main instanceof HTMLElement) return main;
+  } catch {
+    /* window.app not available on this Acode build */
+  }
+  return document.body;
+}
+
 /** Appends a page to the DOM, only if it's actually a DOM node. */
 function mountPage(page: unknown): void {
   if (page instanceof HTMLElement) {
-    document.body.append(page);
+    getMountRoot().append(page);
   } else {
     console.error(`${LOG_PREFIX} Expected a page element but got`, page);
   }
+}
+
+/** Injects the shared theme stylesheet into <head> once, so it applies globally — including to UI mounted outside any page's own DOM subtree. */
+function ensureGlobalStylesheet(baseUrl: string): void {
+  const existing = document.head.querySelector(`link[data-antigravity-theme]`);
+  if (existing) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `${baseUrl}media/css/theme.css`;
+  link.setAttribute("data-antigravity-theme", "1");
+  document.head.append(link);
 }
 
 acode.setPluginInit(PLUGIN_ID, (baseUrl: string) => {
   try {
     console.log(`${LOG_PREFIX} Initializing...`);
     const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+    ensureGlobalStylesheet(normalizedBaseUrl);
 
     function openChat() {
       const page = openChatPage(normalizedBaseUrl, openSettings);
@@ -74,6 +104,9 @@ acode.setPluginInit(PLUGIN_ID, (baseUrl: string) => {
       }
     }
 
+    console.log(`${LOG_PREFIX} Adding floating launch button...`);
+    getMountRoot().append(createFloatingButton(openMain));
+
     console.log(`${LOG_PREFIX} Registering commands...`);
     registerCommands({
       openChat: openMain,
@@ -96,7 +129,7 @@ acode.setPluginInit(PLUGIN_ID, (baseUrl: string) => {
         container.append(openBtn);
       });
     } else {
-      console.error(`${LOG_PREFIX} sidebarApps API not available — use the command palette instead.`);
+      console.error(`${LOG_PREFIX} sidebarApps API not available — the floating button and command palette still work.`);
     }
 
     console.log(`${LOG_PREFIX} Done.`);

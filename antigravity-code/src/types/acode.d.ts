@@ -88,11 +88,23 @@ export interface EditorManagerGlobal {
   emit(event: string, ...args: any[]): void;
 }
 
+/**
+ * Acode's actual app-shell root (not officially documented, but used by
+ * real-world plugins like AcodeX to mount UI — appending to plain
+ * `document.body` can end up invisible behind Acode's own full-screen shell).
+ * `.get('main' | 'header' | 'sidebar' | ...)` returns the named region.
+ */
+export interface AppShellGlobal {
+  get(region: string): HTMLElement | undefined;
+}
+
 declare global {
   const acode: AcodeGlobal;
   const editorManager: EditorManagerGlobal;
+  const app: AppShellGlobal | undefined;
   interface Window {
     acode: AcodeGlobal;
     editorManager: EditorManagerGlobal;
+    app?: AppShellGlobal;
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "download": "https://antigravity-code.onrender.com/dist.zip",
-  "changelog": "Initial release: setup wizard, streaming chat, NVIDIA NIM / OpenAI-compatible / Anthropic / Gemini providers, agent tool system with approval, diff preview, conversation management, quick-action commands."
+  "changelog": "Fixed a bug where the plugin had no visible way to open it after install: the sidebar icon used an invalid icon class (rendered blank), pages/floating button were mounted to document.body instead of Acode's actual app root, and command registration only tried a module that isn't always present. Added a guaranteed floating launch button, a real Material Icons sidebar icon, mounting via Acode's app shell root, and command registration via Ace's editor command manager as well as the commands module. Also added a new logo/icon and general UI polish."
 }
