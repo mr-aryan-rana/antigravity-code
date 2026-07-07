@@ -18,6 +18,7 @@ import { createChatBubble, ChatBubbleHandle } from "../components/chatBubble";
 import { createApprovalCard } from "../components/approvalCard";
 import { createDiffView } from "../components/diffView";
 import { createModelBadge } from "../components/modelBadge";
+import { createLogoMark } from "../components/logo";
 import { createQuickActionsRow } from "../components/quickActions";
 import { ParsedCodeBlock } from "../../utils/markdown";
 import {
@@ -362,6 +363,7 @@ export function openChatPage(baseUrl: string, openSettings: () => void): WcPage 
   settingsBtn.addEventListener("click", openSettings);
 
   const topBar = el("div", { className: "ag-chat-topbar" }, [
+    el("div", { className: "ag-brand" }, [createLogoMark(24), el("span", { className: "ag-brand-title" }, ["Antigravity"])]),
     newChatBtn,
     historyBtn,
     el("span", { className: "ag-spacer" }),

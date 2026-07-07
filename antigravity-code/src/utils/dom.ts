@@ -4,7 +4,7 @@ type Attrs = Record<string, string | boolean | ((e: Event) => void) | undefined>
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   attrs: Attrs = {},
-  children: (HTMLElement | string)[] = [],
+  children: (Node | string)[] = [],
 ): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {

@@ -2,6 +2,7 @@ import { el } from "../../utils/dom";
 import { PROVIDER_DEFINITIONS, getProviderDefinition } from "../../providers/registry";
 import { updateConfig, getConfig } from "../../storage/configStore";
 import { WcPage } from "../../types/acode";
+import { createLogoMark } from "../components/logo";
 
 export interface SetupWizardCallbacks {
   onDone(): void;
@@ -78,6 +79,7 @@ export function openSetupWizard(baseUrl: string, callbacks: SetupWizardCallbacks
 
   const wizard = el("div", { className: "antigravity ag-wizard" }, [
     el("div", { className: "ag-wizard-hero" }, [
+      createLogoMark(64),
       el("h1", {}, ["Welcome to Antigravity Code"]),
       el("p", {}, ["Let's connect your AI model."]),
     ]),
