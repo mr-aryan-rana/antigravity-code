@@ -5,7 +5,13 @@ import { openSettingsPage } from "./ui/views/SettingsPage";
 import { registerCommands, unregisterCommands } from "./commands/quickActionCommands";
 
 const PLUGIN_ID = "com.antigravity.code";
-const SIDEBAR_ICON_CLASS = "icon antigravity-icon";
+/**
+ * Acode's sidebar icon slot renders Google Material Icons via a
+ * "material-icons <name>" class — a made-up class name renders as a blank,
+ * invisible slot with no error (the plugin still "works", it just has no
+ * visible entry point). "smart_toy" is a real Material Icons glyph name.
+ */
+const SIDEBAR_ICON_CLASS = "material-icons smart_toy";
 const LOG_PREFIX = "[Antigravity Code]";
 
 /** Pushes a back-action onto Acode's action stack, if that module is available. */
